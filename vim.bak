@@ -1,0 +1,246 @@
+" The whole point of Vim is lost if you restrict it to Vi compatibility
+set nocompatible
+
+" Allow Vim to deal with buffers that have unsaved edits and are not in view
+set hidden
+
+filetype off
+call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
+filetype plugin indent on
+
+syntax enable
+set encoding=utf-8
+set ttyfast
+
+set gfn=Consolas:h14
+
+"Give a little more space between lines
+set linespace=2.1
+
+"Hide the intro message
+set shortmess+=I
+
+"Set the hidden characters to match TextMate
+set listchars=tab:▸\ ,eol:¬
+
+"Show statusbar with position and command indicated
+set laststatus=2
+set ruler
+set showcmd
+set showmode
+
+"Set tabs
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+set autoindent
+
+"Ensure 3 lines before and after current line show on the screen
+set scrolloff=3
+set scrolloff=3
+set scrolloff=3
+set scrolloff=3
+set scrolloff=3
+
+"Set the leader character to comma instead of backslash
+let mapleader = ","
+
+"Search
+"Use sane regexes.
+nnoremap / /\v
+vnoremap / /\v
+
+"Ignore case unless there is some upper case in the search term
+set ignorecase
+set smartcase
+
+"Incremental search with matches highlighted until you hit <leader>space
+set incsearch
+set showmatch
+set hlsearch
+map <leader><space> :noh<cr>
+
+"Global line search by default
+set gdefault
+
+"Keep search matches in the middle of the window.
+nnoremap * *zzzv
+nnoremap # #zzzv
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+"Easier linewise reselection
+nnoremap <leader>v V`]
+
+"This allows you in visual block mode to select even where there is no actual
+"character
+set virtualedit+=block
+
+runtime macros/matchit.vim
+imap <Tab> <C-N>
+imap <S-Tab> <C-P>
+
+"Make these consistent
+nnoremap Y y$
+nnoremap D d$
+
+"L is easier to type, and I never use the default behavior.
+noremap L $
+
+"Set e to go into append mode. E still does what e did
+map e ea
+
+"Give hard returns by column 80
+
+"Turn on spellcheck by default
+:set spell spelllang=en_us
+
+"Wrapping: Start with wrap on
+set wrap
+set linebreak nolist
+set textwidth=0
+"Help Vim work better with long wrapped lines
+setlocal display+=lastline
+"Keyboard shortcuts to toggle wrapping
+noremap <silent> <Leader>w :call ToggleWrap()<CR>
+function ToggleWrap()
+  if &wrap
+    setlocal nowrap
+    set formatoptions+=at
+    set textwidth=72
+    echo "Hard Wrap ON"
+  else
+    setlocal wrap 
+    set formatoptions-=at
+    set textwidth=0
+    set linebreak nolist
+    echo "Soft Wrap ON"
+  endif
+endfunction
+
+noremap <silent> <Leader>W :call NoWrap()<CR>
+function NoWrap()
+    setlocal nowrap
+    set formatoptions-=at
+    set textwidth=0
+    echo "Wrap OFF"
+endfunction
+
+"Make it easy to edit .vimrc
+noremap <leader>vv :e $MYVIMRC<cr>
+noremap <leader>gv :e $MYGVIMRC<cr>
+
+"Use par to reformat things
+set formatprg=par\ -w72qreg
+
+"Make the movement keys work well with wrapping on
+noremap  <buffer> <silent> <Up>   gk
+noremap  <buffer> <silent> <Down> gj
+"noremap  <buffer> <silent> <Home> g<Home>
+"noremap  <buffer> <silent> <End>  g<End>
+inoremap <buffer> <silent> <Up>   <C-o>gk
+inoremap <buffer> <silent> <Down> <C-o>gj
+"inoremap <buffer> <silent> <Home> <C-o>g<Home>
+"inoremap <buffer> <silent> <End>  <C-o>g<End>
+noremap  <buffer> <silent> k gk
+noremap  <buffer> <silent> j gj
+"noremap  <buffer> <silent> 0 g0
+"noremap  <buffer> <silent> $ g$
+
+"Settings for the command mode autocompletion
+set wildmenu
+set wildmode=longest:full
+
+"Allow the backspace key to work like in most editors
+set backspace=indent,eol,start
+
+"Do an autosave of all buffers each time I switch away from Vim
+"au FocusLost * :wa
+
+" Only in command mode, allow me to use semicolon instead of colon
+nnoremap ; :
+
+"Use jj to move to command mode instead of Escape
+inoremap jj <ESC>
+
+set backupdir=~/.vim/tmp/backup// " backups
+set directory=~/.vim/tmp/swap//   " swap files
+set backup                        " enable backups
+
+"Prettier vertical splits
+set fillchars=vert:│
+
+"Change case
+nnoremap <C-u> gUiw
+inoremap <C-u> <esc>gUiwea
+
+"Yankring
+nnoremap <silent> <F6> :YRShow<cr>
+
+"Turn on man pages (type :Man)  
+runtime ftplugin/man.vim
+
+"Show the full path of the current file when opening a new file
+noremap %% <C-R>=expand('%:h').'/'<cr>
+map <leader>ew :e %%
+map <leader>es :sp %%
+map <leader>ev :vsp %%
+map <leader>et :tabe %%
+
+"Show syntax highlighting groups for word under cursor in status line
+set statusline+=%{synIDattr(synID(line('.'),col('.'),1),'name')}
+
+"Set the key for hexHighlight to ,h
+if exists('*HexHighlight()')
+  nmap <leader>h :call HexHighlight()<Return>
+endif
+
+"Bubble text using Unimpaired
+" Bubble single lines
+nmap <C-M-D-Up> [e
+nmap <C-M-D-Down> ]e
+" Bubble multiple lines
+vmap <C-M-D-Up> [egv
+vmap <C-M-D-Down> ]egv
+
+"Reselect after indenting or outdenting
+vmap > >gv
+vmap < <gv
+
+"Markdown shortcuts
+nnoremap <leader>h1 yypVr=
+nnoremap <leader>h2 yypVr-
+noremap <leader>mk :%!Markdown.pl --html4tags<cr>
+
+" IMPORTANT: grep will sometimes skip displaying the file name if you
+" search in a singe file. This will confuse Latex-Suite. Set your grep
+" program to always generate a file-name.
+set grepprg=grep\ -nH\ $*
+
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+let g:tex_flavor='latex'
+let g:Tex_ViewRule_pdf = 'Preview'
+
+<<<<<<< HEAD
+"Get around swapfile creation problem
+set directory=.,$TEMP
+
+"Show line numbers and make them relative
+set nu
+"set relativenumber
+
+auto bufenter * set relativenumber
+
+=======
+map <D-/> <leader>c<space>
+<<<<<<< HEAD
+>>>>>>> Updates to the JRW color scheme and markdown
+=======
+
+" Open files unfolded
+autocommand BufWinEnter * set foldlevel=999999
+>>>>>>> Open files unfolded
